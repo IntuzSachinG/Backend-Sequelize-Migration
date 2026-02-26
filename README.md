@@ -9,3 +9,11 @@
 <!-- ?? 2. When You Run this below command you got inside database sequelizeMeta and also table  -->
 
 <!-- !! Run This Command npx sequelize-cli db:migrate -->
+
+<!-- ?? 3. Now, If you first time want to create file inside seeders folder run this command -->
+
+<!-- !! npx sequelize seed:generate --name project --> //!! project--> your project name whatever you want
+
+<!-- ?? 4. Now, After Running Command 3 Above now seed all data so data insert into table  -->
+
+<!-- !!   Run this command:->  npx sequelize db:seed:all -->

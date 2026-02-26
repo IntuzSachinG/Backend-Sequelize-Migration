@@ -22,9 +22,8 @@ Task.init(
     createdAt: "created_at",
     updatedAt: "updated_at",
     deletedAt: "deleted_at",
-  }
+  },
 );
 
-Project.hasMany(Task, { foreignKey: "project_id" });
-Task.belongsTo(Project, { foreignKey: "project_id" });
-
+Project.hasMany(Task, { foreignKey: "project_id", as: "tasks" });
+Task.belongsTo(Project, { foreignKey: "project_id", as: "projects" });

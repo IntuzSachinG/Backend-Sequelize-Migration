@@ -1,7 +1,12 @@
  import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
+import { Task } from "./taskModel";
 
-export class Project extends Model {}
+
+export class Project extends Model {
+
+      public readonly tasks?: Task[];
+}
 
 Project.init(
   {
