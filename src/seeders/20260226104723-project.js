@@ -1,4 +1,6 @@
+
 "use strict";
+const { v4: uuidv4 } = require("uuid");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -13,26 +15,24 @@ module.exports = {
      * }], {});
      */
 
-    await queryInterface.bulkInsert("tasks", [
+    await queryInterface.bulkInsert("projects", [
       {
-        id: "33333333-3333-3333-3333-333333333333",
-        title: "Design Homepage",
-        description: "Create UI for homepage",
-        priority: "high",
-        status: "in_progress",
-        assigned_to: "Sachin",
-        project_id: "11111111-1111-1111-1111-111111111111",
+        id: "13111911-1111-1111-1111-111111111111",
+        name: "Website Redesign123",
+        client_name: "ABC Company",
+        start_date: now,
+        end_date: null,
+        status: "active",
         created_at: now,
         updated_at: now,
       },
       {
-        id: "44444444-4444-4444-4444-444444444444",
-        title: "Setup Backend",
-        description: "Create API structure",
-        priority: "medium",
-        status: "todo",
-        assigned_to: "Rahul",
-        project_id: "22222222-2222-2222-2222-222222222222",
+        id: "32222222-9222-2222-2222-222222222222",
+        name: "Mobile App124",
+        client_name: "XYZ Pvt Ltd",
+        start_date: now,
+        end_date: null,
+        status: "planned",
         created_at: now,
         updated_at: now,
       },
@@ -47,6 +47,6 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
 
-    await queryInterface.bulkDelete("tasks", null, {});
+    await queryInterface.bulkDelete("projects", null, {});
   },
 };

@@ -7,5 +7,9 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: "mysql",
+
+    seederStoragePath: "sequelizeData.js",
+    seederStorage: "sequelize",
+    seederStorageTableName: "SequelizeData",
   },
 };

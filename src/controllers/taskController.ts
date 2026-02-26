@@ -1,14 +1,9 @@
 import { Request, Response } from "express";
 import { Task } from "../models/taskModel";
 
-import { v4 as uuidv4 } from "uuid";
-
 export const createTask = async (req: Request, res: Response) => {
   const task = await Task.create({
-    id: uuidv4(),
     ...req.body,
-    created_at: new Date(),
-    updated_at: new Date(),
   });
   res.status(201).json(task);
 };

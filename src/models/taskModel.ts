@@ -6,7 +6,11 @@ export class Task extends Model {}
 
 Task.init(
   {
-    id: { type: DataTypes.UUID, primaryKey: true },
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
     title: { type: DataTypes.STRING, allowNull: false },
     description: DataTypes.TEXT,
     priority: DataTypes.STRING,

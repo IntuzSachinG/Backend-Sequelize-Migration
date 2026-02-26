@@ -17,3 +17,4 @@
 <!-- ?? 4. Now, After Running Command 3 Above now seed all data so data insert into table  -->
 
 <!-- !!   Run this command:->  npx sequelize db:seed:all -->
+

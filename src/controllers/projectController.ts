@@ -1,14 +1,11 @@
 import { Request, Response } from "express";
 import { Project } from "../models/projectModel";
 import { Task } from "../models/taskModel";
-import { v4 as uuidv4 } from "uuid";
+
 
 export const createProject = async (req: Request, res: Response) => {
   const project = await Project.create({
-    id: uuidv4(),
     ...req.body,
-    created_at: new Date(),
-    updated_at: new Date(),
   });
   res.status(201).json(project);
 };
