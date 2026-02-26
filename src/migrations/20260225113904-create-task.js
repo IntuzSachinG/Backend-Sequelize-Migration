@@ -21,6 +21,7 @@ module.exports = {
         defaultValue: "todo",
       },
       assigned_to: Sequelize.STRING,
+      
       project_id: {
         type: Sequelize.UUID,
         allowNull: false,

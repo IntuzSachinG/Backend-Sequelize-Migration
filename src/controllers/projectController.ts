@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { Project } from "../models/projectModel";
 import { Task } from "../models/taskModel";
 
-
 export const createProject = async (req: Request, res: Response) => {
   const project = await Project.create({
     ...req.body,
