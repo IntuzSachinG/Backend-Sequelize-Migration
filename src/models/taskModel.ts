@@ -1,68 +1,10 @@
-// import { DataTypes, Model, Sequelize } from "sequelize";
-// import { sequelize } from "../config/database";
-// import { Project } from "./projectModel";
-
-// export class Task extends Model {}
-
-// Task.init(
-//   {
-//     id: {
-//       type: DataTypes.UUID,
-//       primaryKey: true,
-//       defaultValue: DataTypes.UUIDV4,
-//     },
-//     title: { type: DataTypes.STRING, allowNull: false },
-//     description: DataTypes.TEXT,
-//     priority: DataTypes.STRING,
-//     status: DataTypes.STRING,
-//     assigned_to: DataTypes.STRING,
-//     due_date:DataTypes.DATE,
-//     project_id: DataTypes.UUID,
-//   },
-//   {
-//     sequelize,
-//     tableName: "tasks",
-//     timestamps: true,
-//     paranoid: true,
-//     createdAt: "created_at",
-//     updatedAt: "updated_at",
-//     deletedAt: "deleted_at",
-//   },
-// );
-
-// Project.hasMany(Task, { foreignKey: "project_id", as: "tasks" });
-// Task.belongsTo(Project, { foreignKey: "project_id", as: "projects" });
-
-import {
-  DataTypes,
-  Model,
-  Optional,
-  Association,
-  ForeignKey,
-} from "sequelize";
+import { DataTypes, Model, Optional, Association, ForeignKey } from "sequelize";
 import { sequelize } from "../config/database";
 import { Project } from "./projectModel";
-
-
-export interface TaskAttributes {
-  id: string;
-  title: string;
-  description?: string;
-  priority?: string;
-  status?: string;
-  assigned_to?: string;
-  due_date?: Date;
-  project_id?: string;
-
-  created_at?: Date;
-  updated_at?: Date;
-  deleted_at?: Date | null;
-}
-
-
-export interface TaskCreationAttributes
-  extends Optional<TaskAttributes, "id"> {}
-
+import {
+  TaskAttributes,
+  TaskCreationAttributes,
+} from "../interface/taskModel_interface";
 
 export class Task
   extends Model<TaskAttributes, TaskCreationAttributes>
@@ -81,14 +23,12 @@ export class Task
   public readonly updated_at!: Date;
   public readonly deleted_at!: Date | null;
 
- 
   public readonly project?: Project;
 
   public static associations: {
     project: Association<Task, Project>;
   };
 }
-
 
 Task.init(
   {
@@ -98,11 +38,11 @@ Task.init(
       defaultValue: DataTypes.UUIDV4,
     },
     title: { type: DataTypes.STRING, allowNull: false },
-    description: DataTypes.TEXT,
-    priority: DataTypes.STRING,
-    status: DataTypes.STRING,
-    assigned_to: DataTypes.STRING,
-    due_date: DataTypes.DATE,
+    description:{ type: DataTypes.TEXT,allowNull: false },
+    priority: {type:DataTypes.STRING,allowNull: false} ,
+    status: {type:DataTypes.STRING,allowNull: false} ,
+    assigned_to: {type:DataTypes.STRING,allowNull: false} ,
+    due_date: {type:DataTypes.DATE,allowNull: false },
     project_id: DataTypes.UUID,
   },
   {
@@ -113,9 +53,8 @@ Task.init(
     createdAt: "created_at",
     updatedAt: "updated_at",
     deletedAt: "deleted_at",
-  }
+  },
 );
-
 
 Project.hasMany(Task, {
   foreignKey: "project_id",
@@ -124,5 +63,5 @@ Project.hasMany(Task, {
 
 Task.belongsTo(Project, {
   foreignKey: "project_id",
-  as: "projects", 
+  as: "project",
 });
