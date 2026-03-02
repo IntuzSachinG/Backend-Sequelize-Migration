@@ -82,6 +82,8 @@ export const listProjects = async (
 };
 
 // Get projects 
+
+
 export const getProjectTasks = async (
   req: Request,
   res: Response,
@@ -103,8 +105,8 @@ export const getProjectTasks = async (
 
     return res.status(200).json({
       success: true,
-      message: "Project tasks fetched successfully",
-      data: project.tasks || [],
+      message: "Project with tasks fetched successfully",
+      data: project, 
     });
   } catch (error) {
     next(error);

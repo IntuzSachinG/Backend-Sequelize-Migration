@@ -132,6 +132,19 @@ export const getTasks = async (
       offset,
       order: [[sortField as string, order as string]],
     });
+          
+    // !! Add this From Code Review Feedback
+      if (project_id) {
+      return res.status(200).json({
+        success: true,
+        message: "Tasks fetched successfully",
+        project_id,
+        total: count,
+        page: pageNumber,
+        totalPages: Math.ceil(count / limitNumber),
+        tasks: rows,
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -145,3 +158,4 @@ export const getTasks = async (
     next(error);
   }
 };
+

@@ -35,7 +35,7 @@ Project.init(
     client_name: { type: DataTypes.STRING, allowNull: false },
     start_date: { type: DataTypes.DATE, allowNull: false },
     end_date: { type: DataTypes.DATE, allowNull: false },
-    status: { type: DataTypes.STRING, allowNull: false },
+    status: { type: DataTypes.STRING, allowNull: false , defaultValue: 'planned'},
   },
   {
     sequelize,
