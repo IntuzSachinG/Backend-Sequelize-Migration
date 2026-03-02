@@ -1,38 +1,90 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Task } from "../models/taskModel";
 import { Op } from "sequelize";
 import { Project } from "../models";
 
-// !! Create Task
-export const createTask = async (req: Request, res: Response) => {
-  const task = await Task.create({
-    ...req.body,
-  });
-  res.status(201).json(task);
+// Create Project
+export const createTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { project_id } = req.body;
+
+    const project = await Project.findByPk(project_id);
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    if (project.status === "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot create task. Project is already completed",
+      });
+    }
+
+    const task = await Task.create(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Task created successfully",
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-
-
-// !! Update Task Status
-export const updateTaskStatus = async (req: Request, res: Response) => {
+// Update Task Status
+export const updateTaskStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const id = req.params.id as string;
+    const id = String(req.params.id);
 
     const task = await Task.findByPk(id);
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    const project = await Project.findByPk(task.project_id);
+
+    if (project?.status === "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot update task. Project is completed",
+      });
     }
 
     await task.update({ status: req.body.status });
 
-    return res.json(task);
+    return res.status(200).json({
+      success: true,
+      message: "Task status updated successfully",
+      data: task,
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
-export const getTasks = async (req: Request, res: Response) => {
+// Pagination , filtering , searching , sorting
+export const getTasks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const {
       priority,
@@ -53,49 +105,43 @@ export const getTasks = async (req: Request, res: Response) => {
       deleted_at: null,
     };
 
-    //!! Filtering
-    if (priority) {
-      whereCondition.priority = priority;
-    }
+    if (priority) whereCondition.priority = priority;
+    if (status) whereCondition.status = status;
+    if (project_id) whereCondition.project_id = project_id;
 
-    if (status) {
-      whereCondition.status = status;
-    }
-
-    if (project_id) {
-      whereCondition.project_id = project_id;
-    }
-
-    //!! Search (title & assigned_to)
     if (search) {
       whereCondition[Op.or] = [
         {
-          title: {
-            [Op.like]: `%${search}%`,
-          },
+          title: { [Op.like]: `%${search}%` },
         },
         {
-          assigned_to: {
-            [Op.like]: `%${search}%`,
-          },
+          assigned_to: { [Op.like]: `%${search}%` },
         },
       ];
     }
+
+    const allowedSortFields = ["created_at", "priority", "status"];
+
+    const sortField = allowedSortFields.includes(sort_by as string)
+      ? sort_by
+      : "created_at";
 
     const { count, rows } = await Task.findAndCountAll({
       where: whereCondition,
       limit: limitNumber,
       offset,
-      order: [[sort_by as string, order as string]],
+      order: [[sortField as string, order as string]],
     });
 
-    return res.json({
+    return res.status(200).json({
+      success: true,
+      message: "Tasks fetched successfully",
       total: count,
       page: pageNumber,
       totalPages: Math.ceil(count / limitNumber),
       data: rows,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };

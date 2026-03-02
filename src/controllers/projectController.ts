@@ -1,30 +1,40 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Project } from "../models/projectModel";
 import { Task } from "../models/taskModel";
 
-// !! Create Project
-export const createProject = async (req: Request, res: Response) => {
-  const project = await Project.create({
-    ...req.body,
-  });
-  res.status(201).json(project);
+// Create Project
+export const createProject = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { start_date, end_date } = req.body;
+    if (new Date(end_date) <= new Date(start_date)) {
+      return res.status(400).json({
+        success: false,
+        message: "End date must be greater than start date",
+      });
+    }
+    const project = await Project.create(req.body);
+    return res
+      .status(201)
+      .json({
+        success: true,
+        message: "Project created successfully",
+        data: project,
+      });
+  } catch (error) {
+    next(error);
+  }
 };
 
-// export const createProject = async (req: Request, res: Response) => {
-//   try {
-//     const project = await Project.create({
-//       ...req.body,
-//       status: req.body.status || 'active' // Default status if not provided
-//     });
-//     return res.status(201).json(project);
-//   } catch (error) {
-//     return res.status(500).json({ message: "Failed to create project" });
-//   }
-// };
-
-
-// !! Filtering , Sorting, pagination
-export const listProjects = async (req: Request, res: Response) => {
+// Pagination , sorting , filtering 
+export const listProjects = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const {
       page = "1",
@@ -46,43 +56,57 @@ export const listProjects = async (req: Request, res: Response) => {
       whereCondition.status = status;
     }
 
+    const allowedSortFields = ["created_at", "name", "status"];
+    const sortField = allowedSortFields.includes(sort_by as string)
+      ? sort_by
+      : "created_at";
+
     const { count, rows } = await Project.findAndCountAll({
       where: whereCondition,
       limit: limitNumber,
       offset,
-      order: [[sort_by as string, order as string]],
+      order: [[sortField as string, order as string]],
     });
 
-    return res.json({
+    return res.status(200).json({
+      success: true,
+      message: "Projects fetched successfully",
       total: count,
       page: pageNumber,
       totalPages: Math.ceil(count / limitNumber),
       data: rows,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
-// !! Get Project
-export const getProjectTasks = async (req: Request, res: Response) => {
+// Get projects 
+export const getProjectTasks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const id = req.params.id as string;
+
     const project = await Project.findByPk(id, {
-      include: [
-        {
-          model: Task,
-          as: "tasks",
-        },
-      ],
+      include: [{ model: Task, as: "tasks" }],
     });
 
     if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
     }
 
-    res.json(project.tasks || []);
+    return res.status(200).json({
+      success: true,
+      message: "Project tasks fetched successfully",
+      data: project.tasks || [],
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
