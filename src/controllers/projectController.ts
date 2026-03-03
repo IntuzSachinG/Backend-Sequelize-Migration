@@ -44,7 +44,7 @@ export const listProjects = async (
 
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
-   
+
     // Add this when wrong data pass
     if (isNaN(pageNumber) || pageNumber <= 0) {
       return res.status(400).json({
@@ -52,7 +52,7 @@ export const listProjects = async (
         message: "Page must be a number greater than 0",
       });
     }
-    
+
     // Add this when wrong data pass
     if (isNaN(limitNumber) || limitNumber <= 0) {
       return res.status(400).json({
@@ -67,7 +67,13 @@ export const listProjects = async (
       deleted_at: null,
     };
 
-    if (status) {
+    if (status !== undefined) {
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: "Status Cannot be empty",
+        });
+      }
       whereCondition.status = status;
     }
 

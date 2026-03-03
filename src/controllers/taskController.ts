@@ -100,6 +100,7 @@ export const getTasks = async (
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
 
+    // Add this when wrong data pass
     if (isNaN(pageNumber) || pageNumber <= 0) {
       return res.status(400).json({
         success: false,
@@ -120,8 +121,26 @@ export const getTasks = async (
       deleted_at: null,
     };
 
-    if (priority) whereCondition.priority = priority;
-    if (status) whereCondition.status = status;
+    if (priority !== undefined) {
+      if (!priority) {
+        return res.status(400).json({
+          success: false,
+          message: "Priority Cannot be empty",
+        });
+      }
+      whereCondition.priority = priority;
+    }
+
+    if (status !== undefined) {
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: "Status Cannot be empty",
+        });
+      }
+      whereCondition.status = status;
+    }
+
     if (project_id) whereCondition.project_id = project_id;
 
     if (search) {
