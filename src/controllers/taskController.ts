@@ -99,6 +99,21 @@ export const getTasks = async (
 
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
+
+    if (isNaN(pageNumber) || pageNumber <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Page must be a number greater than 0",
+      });
+    }
+
+    // Add this when wrong data pass
+    if (isNaN(limitNumber) || limitNumber <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "limit must be a number greater than 0",
+      });
+    }
     const offset = (pageNumber - 1) * limitNumber;
 
     const whereCondition: any = {
@@ -132,9 +147,9 @@ export const getTasks = async (
       offset,
       order: [[sortField as string, order as string]],
     });
-          
+
     // !! Add this From Code Review Feedback
-      if (project_id) {
+    if (project_id) {
       return res.status(200).json({
         success: true,
         message: "Tasks fetched successfully",
@@ -158,4 +173,3 @@ export const getTasks = async (
     next(error);
   }
 };
-

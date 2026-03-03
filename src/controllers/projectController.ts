@@ -17,19 +17,17 @@ export const createProject = async (
       });
     }
     const project = await Project.create(req.body);
-    return res
-      .status(201)
-      .json({
-        success: true,
-        message: "Project created successfully",
-        data: project,
-      });
+    return res.status(201).json({
+      success: true,
+      message: "Project created successfully",
+      data: project,
+    });
   } catch (error) {
     next(error);
   }
 };
 
-// Pagination , sorting , filtering 
+// Pagination , sorting , filtering
 export const listProjects = async (
   req: Request,
   res: Response,
@@ -46,6 +44,23 @@ export const listProjects = async (
 
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
+   
+    // Add this when wrong data pass
+    if (isNaN(pageNumber) || pageNumber <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Page must be a number greater than 0",
+      });
+    }
+    
+    // Add this when wrong data pass
+    if (isNaN(limitNumber) || limitNumber <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "limit must be a number greater than 0",
+      });
+    }
+
     const offset = (pageNumber - 1) * limitNumber;
 
     const whereCondition: any = {
@@ -81,8 +96,7 @@ export const listProjects = async (
   }
 };
 
-// Get projects 
-
+// Get projects
 
 export const getProjectTasks = async (
   req: Request,
@@ -106,7 +120,7 @@ export const getProjectTasks = async (
     return res.status(200).json({
       success: true,
       message: "Project with tasks fetched successfully",
-      data: project, 
+      data: project,
     });
   } catch (error) {
     next(error);
