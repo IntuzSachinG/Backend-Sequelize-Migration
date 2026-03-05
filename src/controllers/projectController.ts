@@ -45,7 +45,6 @@ export const listProjects = async (
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
 
-    // Add this when wrong data pass
     if (isNaN(pageNumber) || pageNumber <= 0) {
       return res.status(400).json({
         success: false,
@@ -53,7 +52,6 @@ export const listProjects = async (
       });
     }
 
-    // Add this when wrong data pass
     if (isNaN(limitNumber) || limitNumber <= 0) {
       return res.status(400).json({
         success: false,
@@ -82,17 +80,19 @@ export const listProjects = async (
       ? sort_by
       : "start_date";
 
-      const normalizedOrder = (order as string).toLowerCase();
-    const orderDirection = ["asc", "desc"].includes(normalizedOrder)
-      ? normalizedOrder
-      : "desc"; 
+    const allowedOrders = ["asc", "desc"];
+    const normalizedOrder = (order as string).toLowerCase();
+    if (order && !allowedOrders.includes(normalizedOrder)) {
+      return res.status(400).json({
+        error: "Invalid sortOrder. Use 'asc' or 'desc'.",
+      });
+    }
 
     const { count, rows } = await Project.findAndCountAll({
       where: whereCondition,
       limit: limitNumber,
       offset,
-      // order: [[sortField as string, order as string]],
-       order: [[sortField as string, orderDirection]],
+      order: [[sortField as string, normalizedOrder]],
     });
 
     return res.status(200).json({

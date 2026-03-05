@@ -100,7 +100,6 @@ export const getTasks = async (
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
 
-    // Add this when wrong data pass
     if (isNaN(pageNumber) || pageNumber <= 0) {
       return res.status(400).json({
         success: false,
@@ -108,7 +107,6 @@ export const getTasks = async (
       });
     }
 
-    // Add this when wrong data pass
     if (isNaN(limitNumber) || limitNumber <= 0) {
       return res.status(400).json({
         success: false,
@@ -160,21 +158,21 @@ export const getTasks = async (
       ? sort_by
       : "due_date";
 
-   
+    const allowedOrders = ["asc", "desc"];
     const normalizedOrder = (order as string).toLowerCase();
-    const orderDirection = ["asc", "desc"].includes(normalizedOrder)
-      ? normalizedOrder
-      : "desc";
-    
+    if (order && !allowedOrders.includes(normalizedOrder)) {
+      return res.status(400).json({
+        error: "Invalid sortOrder. Use 'asc' or 'desc'.",
+      });
+    }
 
     const { count, rows } = await Task.findAndCountAll({
       where: whereCondition,
       limit: limitNumber,
       offset,
-      order: [[sortField as string, orderDirection]],
+      order: [[sortField as string, normalizedOrder]],
     });
 
-    // !! Add this From Code Review Feedback
     if (project_id) {
       return res.status(200).json({
         success: true,
