@@ -8,6 +8,13 @@ export const errorHandler = (
 ) => {
   console.error(err);
 
+  if (err.name === 'SequelizeConnectionRefusedError') {
+    return res.status(503).json({
+      success: false,
+      message: "Service Unavailable: Database connection lost.",
+    });
+  }
+
   if (err.name === "SequelizeValidationError") {
     return res.status(400).json({
       success: false,

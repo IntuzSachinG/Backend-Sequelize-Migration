@@ -93,7 +93,7 @@ export const getTasks = async (
       search,
       page = "1",
       limit = "10",
-      sort_by = "created_at",
+      sort_by = "due_date",
       order = "desc",
     } = req.query;
 
@@ -154,17 +154,24 @@ export const getTasks = async (
       ];
     }
 
-    const allowedSortFields = ["created_at", "priority", "status"];
+    const allowedSortFields = ["due_date", "priority", "status"];
 
     const sortField = allowedSortFields.includes(sort_by as string)
       ? sort_by
-      : "created_at";
+      : "due_date";
+
+   
+    const normalizedOrder = (order as string).toLowerCase();
+    const orderDirection = ["asc", "desc"].includes(normalizedOrder)
+      ? normalizedOrder
+      : "desc";
+    
 
     const { count, rows } = await Task.findAndCountAll({
       where: whereCondition,
       limit: limitNumber,
       offset,
-      order: [[sortField as string, order as string]],
+      order: [[sortField as string, orderDirection]],
     });
 
     // !! Add this From Code Review Feedback
